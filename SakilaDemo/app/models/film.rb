@@ -42,5 +42,13 @@ class Film < ActiveRecord::Base
       .limit(5)
   end
 
+  def self.highest_grossing
+    self
+      .select("film.*, (COUNT(rental.rental_id) * film.rental_rate) AS gross")
+      .joins(:rentals)
+      .group("film.film_id")
+      .order("gross DESC")
+      .limit(5)
+  end
 
 end
