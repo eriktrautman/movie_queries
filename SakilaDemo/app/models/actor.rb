@@ -26,5 +26,7 @@ class Actor < ActiveRecord::Base
       .limit(10)
   end
 
+  def self.
+
 
 end
