@@ -26,7 +26,29 @@ class Actor < ActiveRecord::Base
       .limit(10)
   end
 
-  def self.
+  # returns actors with the top average grosses per film
+  def self.best_avg_gross
+    self.find_by_sql(
+      "
+        SELECT actor.*, AVG(gross_proceeds.gross) as avg_gross
+        FROM actor
+          JOIN film_actor ON actor.actor_id = film_actor.actor_id
+          JOIN film AS film1 ON film_actor.film_id = film1.film_id
+          JOIN
+            (
+              SELECT film2.film_id as film_id, (COUNT(rental.rental_id) * film2.rental_rate) AS gross
+              FROM film AS film2
+                JOIN inventory ON film2.film_id = inventory.film_id
+                JOIN rental ON inventory.inventory_id = rental.inventory_id
+              GROUP BY film2.film_id
+            )
+          AS gross_proceeds ON film1.film_id = gross_proceeds.film_id
+        GROUP BY actor.actor_id
+        ORDER BY avg_gross DESC
+        LIMIT 10
+      "
+    )
+  end
 
 
 end
